@@ -25,8 +25,8 @@ public class InputReader
 
     public bool IsRunPressed()
     {
-        // Use GetKey for continuous check while held
-        return Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+        // Only allow running with Right Shift
+        return Input.GetKey(KeyCode.RightShift);
     }
 
     public bool IsJumpPressed()
@@ -37,15 +37,19 @@ public class InputReader
     public bool IsCrouchHeld()
     {
         // Use GetKey for continuous check while held
-        // Consider making the key configurable
-        return Input.GetKey(KeyCode.C);
+        // Changed crouch key to apostrophe (')
+        return Input.GetKey(KeyCode.Quote);
     }
 
-    public bool IsShootPressed()
+    public bool IsSlamPressed()
     {
-        // Use GetButtonDown for single fire per press
-        // Assumes a "Fire1" button is defined (default is Left Ctrl/Mouse 0)
-        return Input.GetButtonDown("Fire1");
-        // If you want continuous fire while held, use GetButton("Fire1")
+        // Use GetKey for continuous check while held
+        return Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
+    }
+
+    public bool IsQuickDashPressed()
+    {
+        // Quick dash on tap of Left Shift
+        return Input.GetKeyDown(KeyCode.LeftShift);
     }
 }

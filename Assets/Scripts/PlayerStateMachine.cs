@@ -60,8 +60,8 @@ public class PlayerStateMachine : MonoBehaviour
     public CrouchState CrouchState { get; private set; }
     public SlideState SlideState { get; private set; }
     public WallClingState WallClingState { get; private set; }
-    public ShootState ShootState { get; private set; } // Add ShootState declaration
     public FallState FallState { get; private set; } // Add FallState declaration
+    public SlamState SlamState { get; private set; }
 
     // Component References (Example)
     public Rigidbody2D RB { get; private set; }
@@ -126,10 +126,10 @@ public class PlayerStateMachine : MonoBehaviour
         WallClingState = new WallClingState(this);
         stateRegistry[nameof(WallClingState)] = WallClingState;
         stateRegistry[nameof(SlideState)] = SlideState;
-        ShootState = new ShootState(this); // Initialize ShootState
-        stateRegistry[nameof(ShootState)] = ShootState; // Register ShootState
         FallState = new FallState(this); // Initialize FallState
         stateRegistry[nameof(FallState)] = FallState; // Register FallState
+        SlamState = new SlamState(this);
+        stateRegistry[nameof(SlamState)] = SlamState;
 
         // Initialize jumps
         JumpsRemaining = MaxJumps;
@@ -156,6 +156,14 @@ public class PlayerStateMachine : MonoBehaviour
             JumpsRemaining = Mathf.Max(0, MaxJumps - 1);
         }
         wasGroundedLastFrame = isGroundedNow;
+
+        // --- SLAM LOGIC ---
+        // Only allow slam if not grounded and not already slamming
+        if (!isGroundedNow && InputReader.IsSlamPressed() && currentState != SlamState)
+        {
+            SwitchState(SlamState);
+            return;
+        }
 
         currentState?.Tick(Time.deltaTime);
     }
@@ -252,6 +260,22 @@ public class PlayerStateMachine : MonoBehaviour
         Collider2D hit = Physics2D.OverlapBox(checkCenter, checkSize, 0f, groundLayer);
 
         return hit == null; // Can stand up if nothing is hit
+    }
+
+    // Returns -1 if touching wall on left, 1 if on right, 0 if not touching wall
+    public int GetWallDirection()
+    {
+        float wallCheckDistance = 0.1f;
+        // Check right
+        RaycastHit2D hitRight = Physics2D.Raycast(playerCollider.bounds.center, Vector2.right, playerCollider.bounds.extents.x + wallCheckDistance, groundLayer);
+        // Check left
+        RaycastHit2D hitLeft = Physics2D.Raycast(playerCollider.bounds.center, Vector2.left, playerCollider.bounds.extents.x + wallCheckDistance, groundLayer);
+        if (hitRight.collider != null && hitLeft.collider == null)
+            return 1;
+        if (hitLeft.collider != null && hitRight.collider == null)
+            return -1;
+        // If both or neither, return 0
+        return 0;
     }
 
 }

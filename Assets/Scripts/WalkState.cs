@@ -14,7 +14,7 @@ public class WalkState : PlayerBaseState
         enterTime = Time.time;
         // Play walk animation
         if (stateMachine.Animator != null)
-            stateMachine.Animator.Play("WalkAnimation");
+            stateMachine.Animator.Play("Walk");
         Debug.Log($"[WalkState] Entering Walk State at {enterTime:F2}s");
         // Play walk sound if needed
         // AudioManager.Instance?.Play("WalkSound");
@@ -34,13 +34,6 @@ public class WalkState : PlayerBaseState
                 stateMachine.SwitchState(stateMachine.FallState);
             }
             return;
-        }
-
-        // Check for Shoot input first
-        if (stateMachine.InputReader.IsShootPressed()) // Use InputReader property
-        {
-            stateMachine.SwitchState(stateMachine.ShootState);
-            return; // Exit early
         }
 
         Vector2 moveInput = stateMachine.GetMovementInput();
@@ -77,6 +70,16 @@ public class WalkState : PlayerBaseState
         // Apply walk movement (only affect horizontal velocity)
         float targetVelocityX = moveInput.x * stateMachine.MoveSpeed * walkSpeedMultiplier;
         stateMachine.RB.linearVelocity = new Vector2(targetVelocityX, stateMachine.RB.linearVelocity.y); // Preserve Y velocity
+
+        // Flip sprite based on movement direction
+        if (moveInput.x < 0) // Moving left (A key)
+        {
+            stateMachine.transform.localScale = new Vector3(-1, 1, 1);
+        }
+        else if (moveInput.x > 0) // Moving right (D key)
+        {
+            stateMachine.transform.localScale = new Vector3(1, 1, 1);
+        }
 
         // Optionally update animation direction
         if (stateMachine.Animator != null)

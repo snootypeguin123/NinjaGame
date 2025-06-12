@@ -49,13 +49,6 @@ public class SlideState : PlayerBaseState
             return;
         }
 
-        // Check for Shoot input first
-        if (stateMachine.InputReader.IsShootPressed()) // Use InputReader property
-        {
-            stateMachine.SwitchState(stateMachine.ShootState);
-            return; // Exit early
-        }
-
         float timeSinceSlideStarted = Time.time - slideStartTime;
 
         // Apply sliding physics (e.g., decreasing velocity over time)

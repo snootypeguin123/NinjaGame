@@ -10,7 +10,7 @@ public class PlayerIdleState : PlayerBaseState
         if (stateMachine.RB != null)
             stateMachine.RB.linearVelocity = Vector2.zero;
         // Play Idle Animation (Example)
-        // stateMachine.Animator.Play("IdleAnimationName");
+        stateMachine.Animator.Play("Idle");
         Debug.Log("Entering Idle State");
     }
 
@@ -29,13 +29,6 @@ public class PlayerIdleState : PlayerBaseState
                 stateMachine.SwitchState(stateMachine.FallState);
             }
             return;
-        }
-
-        // Check for Shoot input
-        if (stateMachine.InputReader.IsShootPressed()) // Use InputReader property
-        {
-            stateMachine.SwitchState(stateMachine.ShootState);
-            return; // Exit early
         }
 
         // Check for Crouch input if grounded

@@ -24,7 +24,7 @@ public class JumpState : PlayerBaseState
 
         // Play jump animation
         if (stateMachine.Animator != null)
-            stateMachine.Animator.Play("JumpAnimation");
+            stateMachine.Animator.Play("Jump");
         Debug.Log($"[JumpState] Entering Jump State at {enterTime:F2}s");
 
         // If grounded, set jumps to MaxJumps - 1 (so the ground jump counts as the first jump)
@@ -85,19 +85,18 @@ public class JumpState : PlayerBaseState
         // Debug: Print grounded state and vertical velocity every frame in JumpState
         Debug.Log($"[JumpState] Tick: IsGrounded={stateMachine.IsGrounded()} VelocityY={stateMachine.RB.linearVelocity.y}");
 
-        // Check for Shoot input first
-        if (stateMachine.InputReader.IsShootPressed()) // Use InputReader property
-        {
-            stateMachine.SwitchState(stateMachine.ShootState);
-            return; // Exit early
-        }
-
         // Apply horizontal movement input while airborne
         Vector2 moveInputAir = stateMachine.InputReader.GetMovementInput();
         float targetVelocityX = moveInputAir.x * stateMachine.MoveSpeed; // Use base MoveSpeed for air control, adjust if needed
         stateMachine.RB.linearVelocity = new Vector2(targetVelocityX, stateMachine.RB.linearVelocity.y); // Preserve Y velocity
 
-    
+        // Only allow state transitions after reaching the peak of the jump (velocityY <= 0)
+        if (stateMachine.RB.linearVelocity.y > 0)
+        {
+            // Still rising, stay in JumpState
+            return;
+        }
+
         // If grounded, reset jumps and transition to Idle/Walk/Run
         if (stateMachine.IsGrounded())
         {

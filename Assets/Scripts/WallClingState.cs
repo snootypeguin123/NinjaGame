@@ -14,9 +14,15 @@ public class WallClingState : PlayerBaseState
         jumpHeldOnEnter = stateMachine.InputReader.IsJumpPressed();
         Debug.Log($"[WallClingState] Entering Wall Cling State at {enterTime:F2}s");
 
+        // Flip sprite based on wall direction
+        int wallDir = stateMachine.GetWallDirection();
+        if (wallDir != 0)
+        {
+            stateMachine.transform.localScale = new Vector3(wallDir, 1, 1);
+        }
+
         // Optional: Play wall cling animation
-        // if (stateMachine.Animator != null)
-        //     stateMachine.Animator.Play("WallClingAnimation"); // Replace with your animation name
+        stateMachine.Animator.Play("Cling"); // Replace with your animation name
 
         // Reduce initial vertical velocity slightly to make the cling feel better
         if (stateMachine.RB != null)
@@ -27,13 +33,6 @@ public class WallClingState : PlayerBaseState
 
     public override void Tick(float deltaTime)
     {
-        // Check for Shoot input first
-        if (stateMachine.InputReader.IsShootPressed()) // Use InputReader property
-        {
-            stateMachine.SwitchState(stateMachine.ShootState);
-            return; // Exit early
-        }
-
         // Apply slow downward slide
         if (stateMachine.RB != null)
         {

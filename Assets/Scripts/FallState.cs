@@ -11,7 +11,7 @@ public class FallState : PlayerBaseState
         enterTime = Time.time;
         // Play fall animation if available
         if (stateMachine.Animator != null)
-            stateMachine.Animator.Play("FallAnimation");
+            stateMachine.Animator.Play("Fall");
         Debug.Log($"[FallState] Entering Fall State at {enterTime:F2}s");
     }
 
@@ -49,13 +49,6 @@ public class FallState : PlayerBaseState
         if (stateMachine.InputReader.IsJumpPressed() && stateMachine.JumpsRemaining > 0)
         {
             stateMachine.SwitchState(stateMachine.JumpState);
-            return;
-        }
-
-        // Allow shooting in air
-        if (stateMachine.InputReader.IsShootPressed())
-        {
-            stateMachine.SwitchState(stateMachine.ShootState);
             return;
         }
     }

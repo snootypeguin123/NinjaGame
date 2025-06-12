@@ -13,7 +13,7 @@ public class RunState : PlayerBaseState
         enterTime = Time.time;
         // Play run animation
         if (stateMachine.Animator != null)
-            stateMachine.Animator.Play("RunAnimation");
+            stateMachine.Animator.Play("Dash");
         Debug.Log($"[RunState] Entering Run State at {enterTime:F2}s");
         // Play run sound if needed
         // AudioManager.Instance?.Play("RunSound");
@@ -36,11 +36,11 @@ public class RunState : PlayerBaseState
         }
 
         // Check for Shoot input first
-        if (stateMachine.InputReader.IsShootPressed()) // Use InputReader property
-        {
-            stateMachine.SwitchState(stateMachine.ShootState);
-            return; // Exit early
-        }
+        // if (stateMachine.InputReader.IsShootPressed()) // Use InputReader property
+        // {
+        //     stateMachine.SwitchState(stateMachine.ShootState);
+        //     return; // Exit early
+        // }
 
         Vector2 moveInput = stateMachine.InputReader.GetMovementInput(); // Use InputReader property
 
@@ -60,11 +60,8 @@ public class RunState : PlayerBaseState
             return; // Exit early after state switch
         }
 
-
-        if (stateMachine.InputReader.IsRunPressed()) {
-            stateMachine.SwitchState(stateMachine.RunState);
-        }
-        else
+        // Only stay in RunState while holding shift (IsRunPressed)
+        if (!stateMachine.InputReader.IsRunPressed())
         {
             stateMachine.SwitchState(stateMachine.WalkState);
             return;
@@ -77,7 +74,7 @@ public class RunState : PlayerBaseState
         }
 
         // Apply run movement (full speed, only affect horizontal velocity)
-        float targetVelocityX = moveInput.x * stateMachine.MoveSpeed;
+        float targetVelocityX = moveInput.x * stateMachine.MoveSpeed * 1.1f;
         stateMachine.RB.linearVelocity = new Vector2(targetVelocityX, stateMachine.RB.linearVelocity.y); // Preserve Y velocity
 
         // Optionally update animation direction

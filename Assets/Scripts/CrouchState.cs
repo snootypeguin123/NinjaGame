@@ -18,7 +18,7 @@ public class CrouchState : PlayerBaseState
         stateMachine.SetColliderCrouching();
         // Play crouch animation
         if (stateMachine.Animator != null)
-            stateMachine.Animator.Play("CrouchAnimation"); // Replace with actual animation name
+            stateMachine.Animator.Play("Slip"); // Replace with actual animation name
         Debug.Log($"[CrouchState] Entering Crouch State at {enterTime:F2}s");
     }
 
@@ -36,13 +36,6 @@ public class CrouchState : PlayerBaseState
                 stateMachine.SwitchState(stateMachine.FallState);
             }
             return;
-        }
-
-        // Check for Shoot input first
-        if (stateMachine.InputReader.IsShootPressed()) // Use InputReader property
-        {
-            stateMachine.SwitchState(stateMachine.ShootState);
-            return; // Exit early
         }
 
         // --- Check for Exit Conditions ---
